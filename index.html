@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Repositori de microprojectes PFI Lleida</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #5f6b7a;
+      --border: #dfe5ee;
+      --primary: #2457c5;
+      --primary-dark: #173f91;
+      --tag: #eef3ff;
+      --tag-text: #24499a;
+      --shadow: 0 12px 30px rgba(20, 35, 70, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #173f91, #2d6cdf);
+      color: white;
+      padding: 48px 22px;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      max-width: 900px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+
+    main {
+      padding: 28px 0 56px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-top: -54px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #31405a;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.96rem;
+      background: white;
+      color: var(--text);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid rgba(36, 87, 197, 0.15);
+      border-color: var(--primary);
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 700;
+      background: var(--primary);
+      color: white;
+      min-height: 44px;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 22px 2px 16px;
+      gap: 16px;
+      color: var(--muted);
+    }
+
+    .summary strong {
+      color: var(--text);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .card h2 {
+      font-size: 1.18rem;
+      line-height: 1.25;
+      margin: 0 0 14px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .meta span strong {
+      color: #29364d;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--tag);
+      color: var(--tag-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 5px 9px;
+    }
+
+    .excerpt {
+      color: #3e4b5f;
+      line-height: 1.5;
+      font-size: 0.94rem;
+      margin: 0 0 18px;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .links a {
+      display: inline-flex;
+      text-decoration: none;
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #edf2ff;
+      color: var(--primary-dark);
+    }
+
+    .links a.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .empty,
+    .loading,
+    .error {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 26px 0 40px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1100px) {
+      .filters {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        padding: 36px 18px;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container hero">
+      <h1>Repositori de microprojectes PFI Lleida</h1>
+      <p>
+        Consulta microprojectes de Programes de Formació i Inserció filtrant per centre educatiu,
+        família professional, perfil del PFI i objectius PINN treballats.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel" aria-label="Filtres de cerca">
+      <div class="filters">
+        <div>
+          <label for="q">Cerca</label>
+          <input id="q" type="search" placeholder="Títol, centre, localitat, repte...">
+        </div>
+
+        <div>
+          <label for="centre">Centre educatiu</label>
+          <select id="centre">
+            <option value="">Tots els centres</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="familia">Família professional</label>
+          <select id="familia">
+            <option value="">Totes les famílies</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="perfil">Perfil del PFI</label>
+          <select id="perfil">
+            <option value="">Tots els perfils</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="objectiu">Objectiu PINN</label>
+          <select id="objectiu">
+            <option value="">Tots els objectius</option>
+          </select>
+        </div>
+
+        <div>
+          <button type="button" id="neteja">Neteja</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div id="resultats">Carregant microprojectes...</div>
+      <div id="estat"></div>
+    </section>
+
+    <section id="cards" class="cards">
+      <div class="loading">Carregant dades...</div>
+    </section>
+  </main>
+
+  <footer>
+    Repositori públic de microprojectes PFI Lleida
+  </footer>
+
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTim3N0982LSPzAguHzvhL6syE3iQHlAvW8OsIt-JeX53WVsLZxwNEGj7KSsgHICFL8rx1G_bCiKqw2/pub?gid=512128812&single=true&output=csv';
+
+    let DATA = [];
+
+    const objectiusPINN = {
+      1: 'Coneixement',
+      2: 'Pràctica',
+      3: 'Adaptació i entorn',
+      4: 'Aptitud',
+      5: 'Transferència',
+      6: 'Autogestió',
+      7: 'Metacognició',
+      8: 'Visió de futur',
+      9: 'Coneixement personal',
+      10: 'Consciència social',
+      11: 'Capacitat d’expressió'
+    };
+
+    const $ = selector => document.querySelector(selector);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarDades();
+
+      $('#q').addEventListener('input', render);
+      $('#centre').addEventListener('change', render);
+      $('#familia').addEventListener('change', render);
+      $('#perfil').addEventListener('change', render);
+      $('#objectiu').addEventListener('change', render);
+      $('#neteja').addEventListener('click', resetFilters);
+    });
+
+    async function carregarDades() {
+      try {
+        const response = await fetch(CSV_URL + '&cacheBust=' + Date.now());
+
+        if (!response.ok) {
+          throw new Error('No s’ha pogut carregar el CSV publicat.');
+        }
+
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+
+        if (!rows.length) {
+          DATA = [];
+          render();
+          return;
+        }
+
+        const headers = rows[0].map(h => String(h || '').trim());
+        const dataRows = rows.slice(1);
+
+        DATA = dataRows
+          .map(row => buildItem(row, headers))
+          .filter(item => item.publicar);
+
+        ompleFiltres();
+        render();
+
+      } catch (error) {
+        console.error(error);
+        $('#resultats').textContent = 'No s’han pogut carregar les dades.';
+        $('#cards').innerHTML = `
+          <div class="error">
+            Hi ha hagut un error carregant el CSV publicat.
+            Revisa que la pestanya PUBLICACIO_WEB estigui publicada com a CSV.
+          </div>
+        `;
+      }
+    }
+
+    function buildItem(row, headers) {
+      const get = name => {
+        const col = headers.indexOf(name);
+        if (col === -1) return '';
+        return String(row[col] || '').trim();
+      };
+
+      const objectiusText = get('Quins objectius PINN es treballen?');
+      const objectius = normalitzaObjectiusPINN(objectiusText);
+
+      const publicarRaw = get('Publicar').toLowerCase();
+      const publicar = ['sí', 'si', 's', 'x', 'true', '1', 'publicar'].includes(publicarRaw);
+
+      return {
+        publicar,
+
+        titol: get('Nom del microprojecte'),
+        centre: get('Centre educatiu'),
+        localitat: get('Localitat'),
+        perfil: get('Perfil del PFI'),
+        familia: get('Família professional'),
+        moduls: get('Mòduls implicats'),
+
+        repteCurt:
+          get('Quin repte, pregunta o servei dona sentit al microprojecte?') ||
+          get('Pregunta / Repte / Servei'),
+
+        objectiusText,
+        objectius,
+
+        urlPresentacio: get('Enllaç a la presentació (per compartir amb els docents de la Xarxa)'),
+        urlEvidencies: get('Enllaça la carpeta de Drive amb les evidències de la realització del projecte'),
+        urlPdf: get('Enllaç al PDF')
+      };
+    }
+
+    function ompleFiltres() {
+      fillSelect('#centre', uniqueSorted(DATA.map(item => item.centre)), 'Tots els centres');
+      fillSelect('#familia', uniqueSorted(DATA.map(item => item.familia)), 'Totes les famílies');
+      fillSelect('#perfil', uniqueSorted(DATA.map(item => item.perfil)), 'Tots els perfils');
+
+      const objectiusSet = new Set();
+      DATA.forEach(item => {
+        item.objectius.forEach(obj => objectiusSet.add(obj));
+      });
+
+      const objectius = Array.from(objectiusSet).sort((a, b) => a - b);
+      fillObjectius('#objectiu', objectius);
+    }
+
+    function fillSelect(selector, values, defaultText) {
+      const select = $(selector);
+      select.innerHTML = `<option value="">${escapeHtml(defaultText)}</option>`;
+
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+    }
+
+    function fillObjectius(selector, values) {
+      const select = $(selector);
+      select.innerHTML = '<option value="">Tots els objectius</option>';
+
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = String(value);
+        option.textContent = `Obj. ${value} · ${objectiusPINN[value] || ''}`;
+        select.appendChild(option);
+      });
+    }
+
+    function render() {
+      const q = normalitza($('#q').value);
+      const centre = $('#centre').value;
+      const familia = $('#familia').value;
+      const perfil = $('#perfil').value;
+      const objectiu = $('#objectiu').value;
+
+      const filtrats = DATA.filter(item => {
+        const text = normalitza([
+          item.titol,
+          item.centre,
+          item.localitat,
+          item.familia,
+          item.perfil,
+          item.moduls,
+          item.repteCurt,
+          item.objectiusText
+        ].join(' '));
+
+        const passaCerca = !q || text.includes(q);
+        const passaCentre = !centre || item.centre === centre;
+        const passaFamilia = !familia || item.familia === familia;
+        const passaPerfil = !perfil || item.perfil === perfil;
+        const passaObjectiu = !objectiu || (item.objectius || []).includes(Number(objectiu));
+
+        return passaCerca && passaCentre && passaFamilia && passaPerfil && passaObjectiu;
+      });
+
+      $('#resultats').innerHTML = `<strong>${filtrats.length}</strong> microprojecte(s) trobat(s)`;
+      $('#estat').textContent = DATA.length ? `${DATA.length} microprojecte(s) publicat(s)` : '';
+
+      const container = $('#cards');
+
+      if (!filtrats.length) {
+        container.innerHTML = `
+          <div class="empty">
+            No s'ha trobat cap microprojecte amb aquests filtres.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtrats.map(renderCard).join('');
+    }
+
+    function renderCard(item) {
+      const tags = (item.objectius || [])
+        .map(num => `<span class="tag">Obj. ${num} · ${escapeHtml(objectiusPINN[num] || '')}</span>`)
+        .join('');
+
+      const repte = truncate(item.repteCurt || '', 300);
+
+      const links = [
+        item.urlPdf ? `<a class="primary" href="${safeUrl(item.urlPdf)}" target="_blank" rel="noopener">Veure PDF</a>` : '',
+        item.urlPresentacio ? `<a href="${safeUrl(item.urlPresentacio)}" target="_blank" rel="noopener">Presentació</a>` : '',
+        item.urlEvidencies ? `<a href="${safeUrl(item.urlEvidencies)}" target="_blank" rel="noopener">Evidències</a>` : ''
+      ].filter(Boolean).join('');
+
+      return `
+        <article class="card">
+          <h2>${escapeHtml(item.titol || 'Microprojecte sense títol')}</h2>
+
+          <div class="meta">
+            <span><strong>Centre:</strong> ${escapeHtml(item.centre || '—')}</span>
+            <span><strong>Localitat:</strong> ${escapeHtml(item.localitat || '—')}</span>
+            <span><strong>Família:</strong> ${escapeHtml(item.familia || '—')}</span>
+            <span><strong>Perfil:</strong> ${escapeHtml(item.perfil || '—')}</span>
+          </div>
+
+          <div class="tags">
+            ${tags || '<span class="tag">Sense objectius indicats</span>'}
+          </div>
+
+          <p class="excerpt">${escapeHtml(repte)}</p>
+
+          <div class="links">
+            ${links || '<span class="tag">Sense enllaços públics</span>'}
+          </div>
+        </article>
+      `;
+    }
+
+    function resetFilters() {
+      $('#q').value = '';
+      $('#centre').value = '';
+      $('#familia').value = '';
+      $('#perfil').value = '';
+      $('#objectiu').value = '';
+      render();
+    }
+
+    function normalitzaObjectiusPINN(text) {
+      if (!text) return [];
+
+      const resultats = [];
+      const regex = /(?:^|[^\d])([1-9]|10|11)(?:[\.\s\-–]|$)/g;
+      let match;
+
+      while ((match = regex.exec(text)) !== null) {
+        const num = Number(match[1]);
+        if (!resultats.includes(num)) {
+          resultats.push(num);
+        }
+      }
+
+      return resultats.sort((a, b) => a - b);
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+          field += '"';
+          i++;
+          continue;
+        }
+
+        if (char === '"') {
+          inQuotes = !inQuotes;
+          continue;
+        }
+
+        if (char === ',' && !inQuotes) {
+          row.push(field);
+          field = '';
+          continue;
+        }
+
+        if ((char === '\n' || char === '\r') && !inQuotes) {
+          if (char === '\r' && next === '\n') {
+            i++;
+          }
+
+          row.push(field);
+
+          if (row.some(cell => String(cell).trim() !== '')) {
+            rows.push(row);
+          }
+
+          row = [];
+          field = '';
+          continue;
+        }
+
+        field += char;
+      }
+
+      row.push(field);
+
+      if (row.some(cell => String(cell).trim() !== '')) {
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function uniqueSorted(values) {
+      return Array.from(
+        new Set(
+          values
+            .map(v => String(v || '').trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => a.localeCompare(b, 'ca'));
+    }
+
+    function normalitza(text) {
+      return String(text || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+    }
+
+    function truncate(text, max) {
+      const value = String(text || '').trim();
+      if (value.length <= max) return value;
+      return value.slice(0, max).trim() + '…';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function safeUrl(value) {
+      const url = String(value || '').trim();
+
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return '#';
+      }
+
+      return escapeHtml(url);
+    }
+  </script>
+</body>
+</html>
