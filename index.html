@@ -441,7 +441,32 @@
   };
 }
 
-    
+    function ompleFiltres() {
+  fillSelect('#centre', uniqueSorted(DATA.map(item => item.centre)), 'Tots els centres');
+  fillSelect('#familia', uniqueSorted(DATA.map(item => item.familia)), 'Totes les famílies');
+  fillSelect('#perfil', uniqueSorted(DATA.map(item => item.perfil)), 'Tots els perfils');
+
+  const objectiusSet = new Set();
+
+  DATA.forEach(item => {
+    item.objectius.forEach(obj => objectiusSet.add(obj));
+  });
+
+  const objectius = Array.from(objectiusSet).sort((a, b) => a - b);
+  fillObjectius('#objectiu', objectius);
+}
+
+function fillSelect(selector, values, defaultText) {
+  const select = $(selector);
+  select.innerHTML = `<option value="">${escapeHtml(defaultText)}</option>`;
+
+  values.forEach(value => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
+  });
+}
    
 
     function fillObjectius(selector, values) {
