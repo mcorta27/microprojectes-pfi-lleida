@@ -337,6 +337,8 @@
     Repositori públic de microprojectes PFI Lleida
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  
   <script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTim3N0982LSPzAguHzvhL6syE3iQHlAvW8OsIt-JeX53WVsLZxwNEGj7KSsgHICFL8rx1G_bCiKqw2/pub?gid=512128812&single=true&output=csv';
 
@@ -370,105 +372,77 @@
     });
 
     async function carregarDades() {
-      try {
-        const response = await fetch(CSV_URL + '&cacheBust=' + Date.now());
+  try {
+    const response = await fetch(CSV_URL + '&cacheBust=' + Date.now());
 
-        if (!response.ok) {
-          throw new Error('No s’ha pogut carregar el CSV publicat.');
-        }
-
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
-
-        if (!rows.length) {
-          DATA = [];
-          render();
-          return;
-        }
-
-        const headers = rows[0].map(h => String(h || '').trim());
-        const dataRows = rows.slice(1);
-
-        DATA = dataRows
-          .map(row => buildItem(row, headers))
-          .filter(item => item.publicar);
-
-        ompleFiltres();
-        render();
-
-      } catch (error) {
-        console.error(error);
-        $('#resultats').textContent = 'No s’han pogut carregar les dades.';
-        $('#cards').innerHTML = `
-          <div class="error">
-            Hi ha hagut un error carregant el CSV publicat.
-            Revisa que la pestanya PUBLICACIO_WEB estigui publicada com a CSV.
-          </div>
-        `;
-      }
+    if (!response.ok) {
+      throw new Error('No s’ha pogut carregar el CSV publicat.');
     }
 
-    function buildItem(row, headers) {
-      const get = name => {
-        const col = headers.indexOf(name);
-        if (col === -1) return '';
-        return String(row[col] || '').trim();
-      };
+    const csvText = await response.text();
 
-      const objectiusText = get('Quins objectius PINN es treballen?');
-      const objectius = normalitzaObjectiusPINN(objectiusText);
+    const parsed = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true
+    });
 
-      const publicarRaw = get('Publicar').toLowerCase();
-      const publicar = ['sí', 'si', 's', 'x', 'true', '1', 'publicar'].includes(publicarRaw);
-
-      return {
-        publicar,
-
-        titol: get('Nom del microprojecte'),
-        centre: get('Centre educatiu'),
-        localitat: get('Localitat'),
-        perfil: get('Perfil del PFI'),
-        familia: get('Família professional'),
-        moduls: get('Mòduls implicats'),
-
-        repteCurt:
-          get('Quin repte, pregunta o servei dona sentit al microprojecte?') ||
-          get('Pregunta / Repte / Servei'),
-
-        objectiusText,
-        objectius,
-
-        urlPresentacio: get('Enllaç a la presentació (per compartir amb els docents de la Xarxa)'),
-        urlEvidencies: get('Enllaça la carpeta de Drive amb les evidències de la realització del projecte'),
-        urlPdf: get('Enllaç al PDF')
-      };
+    if (parsed.errors && parsed.errors.length) {
+      console.warn('Avisos en llegir el CSV:', parsed.errors);
     }
 
-    function ompleFiltres() {
-      fillSelect('#centre', uniqueSorted(DATA.map(item => item.centre)), 'Tots els centres');
-      fillSelect('#familia', uniqueSorted(DATA.map(item => item.familia)), 'Totes les famílies');
-      fillSelect('#perfil', uniqueSorted(DATA.map(item => item.perfil)), 'Tots els perfils');
+    DATA = parsed.data
+      .map(buildItemFromObject)
+      .filter(item => item.publicar);
 
-      const objectiusSet = new Set();
-      DATA.forEach(item => {
-        item.objectius.forEach(obj => objectiusSet.add(obj));
-      });
+    ompleFiltres();
+    render();
 
-      const objectius = Array.from(objectiusSet).sort((a, b) => a - b);
-      fillObjectius('#objectiu', objectius);
-    }
+  } catch (error) {
+    console.error(error);
+    $('#resultats').textContent = 'No s’han pogut carregar les dades.';
+    $('#cards').innerHTML = `
+      <div class="error">
+        Hi ha hagut un error carregant el CSV publicat.<br><br>
+        <code>${escapeHtml(error.message)}</code>
+      </div>
+    `;
+  }
+}
 
-    function fillSelect(selector, values, defaultText) {
-      const select = $(selector);
-      select.innerHTML = `<option value="">${escapeHtml(defaultText)}</option>`;
+    function buildItemFromObject(row) {
+  const get = name => String(row[name] || '').trim();
 
-      values.forEach(value => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = value;
-        select.appendChild(option);
-      });
-    }
+  const objectiusText = get('Quins objectius PINN es treballen?');
+  const objectius = normalitzaObjectiusPINN(objectiusText);
+
+  const publicarRaw = get('Publicar').toLowerCase();
+  const publicar = ['sí', 'si', 's', 'x', 'true', '1', 'publicar'].includes(publicarRaw);
+
+  return {
+    publicar,
+
+    titol: get('Nom del microprojecte'),
+    centre: get('Centre educatiu'),
+    localitat: get('Localitat'),
+    perfil: get('Perfil del PFI'),
+    familia: get('Família professional'),
+    moduls: get('Mòduls implicats'),
+
+    repteCurt:
+      get('Quin repte, pregunta o servei dona sentit al microprojecte?') ||
+      get('Pregunta / Repte / Servei'),
+
+    objectiusText,
+    objectius,
+
+    urlPresentacio: get('Enllaç a la presentació (per compartir amb els docents de la Xarxa)'),
+    urlEvidencies: get('Enllaça la carpeta de Drive amb les evidències de la realització del projecte'),
+    urlPdf: get('Enllaç al PDF')
+  };
+}
+
+    
+   
 
     function fillObjectius(selector, values) {
       const select = $(selector);
@@ -590,60 +564,7 @@
       return resultats.sort((a, b) => a - b);
     }
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let field = '';
-      let inQuotes = false;
 
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
-
-        if (char === '"' && inQuotes && next === '"') {
-          field += '"';
-          i++;
-          continue;
-        }
-
-        if (char === '"') {
-          inQuotes = !inQuotes;
-          continue;
-        }
-
-        if (char === ',' && !inQuotes) {
-          row.push(field);
-          field = '';
-          continue;
-        }
-
-        if ((char === '\n' || char === '\r') && !inQuotes) {
-          if (char === '\r' && next === '\n') {
-            i++;
-          }
-
-          row.push(field);
-
-          if (row.some(cell => String(cell).trim() !== '')) {
-            rows.push(row);
-          }
-
-          row = [];
-          field = '';
-          continue;
-        }
-
-        field += char;
-      }
-
-      row.push(field);
-
-      if (row.some(cell => String(cell).trim() !== '')) {
-        rows.push(row);
-      }
-
-      return rows;
-    }
 
     function uniqueSorted(values) {
       return Array.from(
